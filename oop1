@@ -1,0 +1,360 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+
+// Custom Exception Class
+class CapacityExceededException
+{
+public:
+    string message;
+
+    CapacityExceededException()
+    {
+        message = "Error: Course Capacity Exceeded!";
+    }
+};
+
+
+
+// Forward Declaration
+class Student;
+class Faculty;
+
+
+
+// Student Class
+class Student
+{
+private:
+    string name;
+    int rollNo;
+
+public:
+
+    Student(string n, int r)
+    {
+        name = n;
+        rollNo = r;
+    }
+
+
+    string getName()
+    {
+        return name;
+    }
+
+
+    int getRollNo()
+    {
+        return rollNo;
+    }
+};
+
+
+
+
+// Faculty Class
+class Faculty
+{
+private:
+    string name;
+
+public:
+
+    Faculty(string n)
+    {
+        name=n;
+    }
+
+
+    string getName()
+    {
+        return name;
+    }
+};
+
+
+
+
+
+
+// Course Class
+class Course
+{
+
+private:
+
+    string courseCode;
+    string courseName;
+    int creditHours;
+
+    Faculty* instructor;
+
+    int maxCapacity;
+    int enrolledCount;
+
+
+    Student* waitingList[10];
+    int waitCount;
+
+
+public:
+
+
+    Course(string code,string name,int credit,
+           Faculty* f,int capacity)
+    {
+
+        courseCode=code;
+        courseName=name;
+        creditHours=credit;
+
+        instructor=f;
+
+        maxCapacity=capacity;
+        enrolledCount=0;
+
+        waitCount=0;
+    }
+
+
+
+    // Getters
+
+    string getCourseCode()
+    {
+        return courseCode;
+    }
+
+
+
+    // Enrollment Function
+
+    void enrollStudent(Student* s)
+    {
+
+        if(enrolledCount >= maxCapacity)
+        {
+            throw CapacityExceededException();
+        }
+
+
+        cout<<s->getName()
+            <<" enrolled in "
+            <<courseCode<<endl;
+
+
+        enrolledCount++;
+    }
+
+
+
+    // Add student in waiting list
+
+    void addWaiting(Student* s)
+    {
+        waitingList[waitCount]=s;
+        waitCount++;
+    }
+
+
+
+
+
+    // == Operator Overloading
+
+    bool operator==(Course c)
+    {
+        return courseCode == c.courseCode;
+    }
+
+
+
+
+
+    // + Operator Overloading
+    // Merge waiting lists
+
+    Student** operator+(Course c)
+    {
+
+        static Student* merged[20];
+
+        int index=0;
+
+
+        for(int i=0;i<waitCount;i++)
+        {
+            merged[index++]=waitingList[i];
+        }
+
+
+        for(int i=0;i<c.waitCount;i++)
+        {
+            merged[index++]=c.waitingList[i];
+        }
+
+
+        return merged;
+    }
+
+
+
+
+
+    // Friend function for <<
+
+    friend ostream& operator<<(ostream& out, Course& c);
+
+};
+
+
+
+
+
+// << Operator
+
+ostream& operator<<(ostream& out, Course& c)
+{
+
+    out<<"Course Code: "
+       <<c.courseCode<<endl;
+
+
+    out<<"Course Name: "
+       <<c.courseName<<endl;
+
+
+    out<<"Credit Hours: "
+       <<c.creditHours<<endl;
+
+
+    out<<"Instructor: "
+       <<c.instructor->getName()<<endl;
+
+
+    out<<"Capacity: "
+       <<c.enrolledCount
+       <<"/"
+       <<c.maxCapacity<<endl;
+
+
+    return out;
+}
+
+
+
+
+
+
+// Enrollment Class
+
+class Enrollment
+{
+
+private:
+
+    Student* student;
+    Course* course;
+
+    string enrollmentDate;
+    string grade;
+
+
+public:
+
+
+Enrollment(Student* s,Course* c,string d)
+{
+
+    student=s;
+    course=c;
+    enrollmentDate=d;
+    grade="Not Assigned";
+
+}
+
+
+};
+
+
+
+
+
+
+
+
+int main()
+{
+
+    Faculty f("Dr Ali");
+
+
+    Student s1("Ahmed",1);
+    Student s2("Sara",2);
+
+
+
+    Course c1("CS101",
+              "OOP",
+              3,
+              &f,
+              1);
+
+
+
+    Course c2("CS102",
+              "DSA",
+              3,
+              &f,
+              2);
+
+
+
+
+
+    // Enrollment
+
+    try
+    {
+
+        c1.enrollStudent(&s1);
+
+        c1.enrollStudent(&s2);
+
+    }
+
+
+    catch(CapacityExceededException e)
+    {
+        cout<<e.message<<endl;
+    }
+
+
+
+
+
+
+    // Operator ==
+
+    if(c1==c2)
+        cout<<"Same Course"<<endl;
+
+    else
+        cout<<"Different Course"<<endl;
+
+
+
+
+
+    // Operator <<
+
+    cout<<c1;
+
+
+
+
+
+    return 0;
+}
