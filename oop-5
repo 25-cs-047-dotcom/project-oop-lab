@@ -1,0 +1,204 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+//-------------------- Student Class --------------------
+class Student {
+private:
+    int id;
+    string name;
+
+public:
+    Student() {
+        id = 0;
+        name = "";
+    }
+
+    Student(int i, string n) {
+        id = i;
+        name = n;
+    }
+
+    void display() {
+        cout << "ID: " << id
+             << " , Name: " << name << endl;
+    }
+
+    string getName() {
+        return name;
+    }
+};
+
+//-------------------- Accommodation (Abstract Class) --------------------
+class Accommodation {
+public:
+    virtual void allocateRoom(Student* s, int roomNo) = 0;
+    virtual void vacateRoom(int roomNo) = 0;
+};
+
+//-------------------- Reportable (Abstract Class) --------------------
+class Reportable {
+public:
+    virtual void generateReport() = 0;
+};
+
+//-------------------- Room Class --------------------
+class Room {
+private:
+    int roomNumber;
+    string type;
+    int floor;
+
+    Student* occupants[3];
+    int count;
+
+public:
+    Room() {
+        roomNumber = 0;
+        type = "";
+        floor = 0;
+        count = 0;
+
+        for (int i = 0; i < 3; i++)
+            occupants[i] = NULL;
+    }
+
+    Room(int rn, string t, int f) {
+        roomNumber = rn;
+        type = t;
+        floor = f;
+        count = 0;
+
+        for (int i = 0; i < 3; i++)
+            occupants[i] = NULL;
+    }
+
+    int getRoomNo() {
+        return roomNumber;
+    }
+
+    bool addStudent(Student* s) {
+        if (count < 3) {
+            occupants[count] = s;
+            count++;
+            return true;
+        }
+        return false;
+    }
+
+    void removeStudents() {
+        for (int i = 0; i < count; i++)
+            occupants[i] = NULL;
+
+        count = 0;
+    }
+
+    void displayRoom() {
+        cout << "\nRoom Number: " << roomNumber
+             << "\nType: " << type
+             << "\nFloor: " << floor
+             << "\nOccupants:\n";
+
+        if (count == 0)
+            cout << "No Students Assigned.\n";
+
+        for (int i = 0; i < count; i++)
+            occupants[i]->display();
+    }
+};
+
+//-------------------- HostelBlock Class --------------------
+class HostelBlock {
+private:
+    string blockName;
+
+public:
+    Room rooms[3];
+
+    HostelBlock(string name = "A") {
+        blockName = name;
+
+        rooms[0] = Room(101, "Single", 1);
+        rooms[1] = Room(102, "Double", 1);
+        rooms[2] = Room(201, "Triple", 2);
+    }
+
+    string getBlockName() {
+        return blockName;
+    }
+};
+
+//-------------------- HostelManager Class --------------------
+class HostelManager : public Accommodation,
+                      public Reportable {
+private:
+    HostelBlock block;      // Composition
+
+public:
+    HostelManager(string name)
+        : block(name) {}
+
+    // Allocate Room
+    void allocateRoom(Student* s, int roomNo) override {
+        for (int i = 0; i < 3; i++) {
+            if (block.rooms[i].getRoomNo() == roomNo) {
+                if (block.rooms[i].addStudent(s))
+                    cout << s->getName()
+                         << " allocated to Room "
+                         << roomNo << endl;
+                else
+                    cout << "Room Full!\n";
+                return;
+            }
+        }
+
+        cout << "Room not found.\n";
+    }
+
+    // Vacate Room
+    void vacateRoom(int roomNo) override {
+        for (int i = 0; i < 3; i++) {
+            if (block.rooms[i].getRoomNo() == roomNo) {
+                block.rooms[i].removeStudents();
+                cout << "Room "
+                     << roomNo
+                     << " has been vacated.\n";
+                return;
+            }
+        }
+
+        cout << "Room not found.\n";
+    }
+
+    // Occupancy Report
+    void generateReport() override {
+        cout << "\n===== Occupancy Report =====\n";
+
+        for (int i = 0; i < 3; i++)
+            block.rooms[i].displayRoom();
+    }
+};
+
+//-------------------- Main Function --------------------
+int main() {
+    Student s1(1, "Ali");
+    Student s2(2, "Ahmed");
+    Student s3(3, "Sara");
+    Student s4(4, "Ayesha");
+
+    HostelManager manager("B");
+
+    manager.allocateRoom(&s1, 101);
+    manager.allocateRoom(&s2, 102);
+    manager.allocateRoom(&s3, 102);
+    manager.allocateRoom(&s4, 201);
+
+    manager.generateReport();
+
+    cout << "\nVacating Room 102...\n";
+    manager.vacateRoom(102);
+
+    manager.generateReport();
+
+    return 0;
+}
