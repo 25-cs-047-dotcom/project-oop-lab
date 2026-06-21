@@ -1,0 +1,133 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iomanip>
+using namespace std;
+
+// ---------------- Student Class ----------------
+class Student {
+public:
+    int id;
+    string name;
+    double gpa;
+
+    Student(int i, string n, double g)
+        : id(i), name(n), gpa(g) {}
+};
+
+// ---------------- Book Class ----------------
+class Book {
+public:
+    int bookID;
+    string title;
+    bool overdue;
+
+    Book(int id, string t, bool o)
+        : bookID(id), title(t), overdue(o) {}
+};
+
+// ---------------- Utility Class ----------------
+class Utils {
+public:
+    static bool validateID(int id) {
+        return id > 0;
+    }
+
+    static void printLine() {
+        cout << "----------------------------------------\n";
+    }
+};
+
+// ---------------- Report Class ----------------
+class Report {
+public:
+    // Consolidated Campus Report
+    static void campusReport(vector<Student>& students,
+                             vector<Book>& books) {
+        Utils::printLine();
+        cout << "        CAMPUS REPORT\n";
+        Utils::printLine();
+
+        cout << "\nStudents:\n";
+        for (auto s : students) {
+            cout << "ID: " << s.id
+                 << " | Name: " << s.name
+                 << " | GPA: " << fixed
+                 << setprecision(2)
+                 << s.gpa << endl;
+        }
+
+        cout << "\nBooks:\n";
+        for (auto b : books) {
+            cout << "Book ID: " << b.bookID
+                 << " | Title: " << b.title
+                 << " | Overdue: "
+                 << (b.overdue ? "Yes" : "No")
+                 << endl;
+        }
+        Utils::printLine();
+    }
+
+    // Sort Students by GPA
+    static void sortByGPA(vector<Student>& students) {
+        sort(students.begin(), students.end(),
+             [](Student a, Student b) {
+                 return a.gpa > b.gpa;
+             });
+
+        cout << "\nStudents Sorted By GPA:\n";
+        for (auto s : students) {
+            cout << s.name
+                 << " - GPA: "
+                 << s.gpa << endl;
+        }
+    }
+
+    // Find Overdue Books
+    static void overdueBooks(vector<Book>& books) {
+        cout << "\nOverdue Books:\n";
+
+        bool found = false;
+
+        for (auto b : books) {
+            if (b.overdue) {
+                cout << "Book ID: "
+                     << b.bookID
+                     << " | "
+                     << b.title
+                     << endl;
+                found = true;
+            }
+        }
+
+        if (!found)
+            cout << "No overdue books found.\n";
+    }
+};
+
+// ---------------- Main Function ----------------
+int main() {
+
+    vector<Student> students;
+
+    students.push_back(Student(1, "Ali", 3.80));
+    students.push_back(Student(2, "Sara", 3.20));
+    students.push_back(Student(3, "Ahmed", 3.95));
+
+    vector<Book> books;
+
+    books.push_back(Book(101, "C++ Programming", true));
+    books.push_back(Book(102, "Database Systems", false));
+    books.push_back(Book(103, "Data Structures", true));
+
+    // Generate Campus Report
+    Report::campusReport(students, books);
+
+    // Sort Students by GPA
+    Report::sortByGPA(students);
+
+    // Find Overdue Books
+    Report::overdueBooks(books);
+
+    return 0;
+}
