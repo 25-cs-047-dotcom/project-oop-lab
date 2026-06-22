@@ -3,7 +3,7 @@
 using namespace std;
 
 
-// Custom Exception Class
+
 class CapacityExceededException
 {
 public:
@@ -17,14 +17,12 @@ public:
 
 
 
-// Forward Declaration
 class Student;
 class Faculty;
 
 
 
-// Student Class
-class Student
+
 {
 private:
     string name;
@@ -54,7 +52,7 @@ public:
 
 
 
-// Faculty Class
+
 class Faculty
 {
 private:
@@ -79,7 +77,7 @@ public:
 
 
 
-// Course Class
+
 class Course
 {
 
@@ -120,7 +118,7 @@ public:
 
 
 
-    // Getters
+    
 
     string getCourseCode()
     {
@@ -129,7 +127,7 @@ public:
 
 
 
-    // Enrollment Function
+    
 
     void enrollStudent(Student* s)
     {
@@ -150,7 +148,7 @@ public:
 
 
 
-    // Add student in waiting list
+   
 
     void addWaiting(Student* s)
     {
@@ -162,8 +160,7 @@ public:
 
 
 
-    // == Operator Overloading
-
+   
     bool operator==(Course c)
     {
         return courseCode == c.courseCode;
@@ -173,9 +170,7 @@ public:
 
 
 
-    // + Operator Overloading
-    // Merge waiting lists
-
+   
     Student** operator+(Course c)
     {
 
@@ -203,8 +198,7 @@ public:
 
 
 
-    // Friend function for <<
-
+    
     friend ostream& operator<<(ostream& out, Course& c);
 
 };
@@ -213,7 +207,7 @@ public:
 
 
 
-// << Operator
+
 
 ostream& operator<<(ostream& out, Course& c)
 {
@@ -248,7 +242,6 @@ ostream& operator<<(ostream& out, Course& c)
 
 
 
-// Enrollment Class
 
 class Enrollment
 {
