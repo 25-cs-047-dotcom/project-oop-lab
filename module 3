@@ -1,0 +1,229 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+class OverdueException {
+    float fine;
+public:
+    OverdueException(float f){
+        fine = f;
+    }
+    float getFine(){
+        return fine;
+    }
+};
+
+
+class LibraryItem {
+protected:
+    int itemID;
+    string title;
+    string author;
+    int publicationYear;
+
+public:
+    LibraryItem(int id,string t,string a,int y){
+        itemID=id;
+        title=t;
+        author=a;
+        publicationYear=y;
+    }
+
+    virtual void checkout()=0;   // pure virtual
+
+    int getID(){
+        return itemID;
+    }
+
+    string getTitle(){
+        return title;
+    }
+
+    virtual void display(){
+        cout<<itemID<<" "<<title<<" "<<author<<" "<<publicationYear<<endl;
+    }
+};
+
+
+class Book : public LibraryItem {
+
+    string ISBN;
+    string genre;
+    int copies;
+
+public:
+
+Book(int id,string t,string a,int y,string isbn,string g,int c)
+:LibraryItem(id,t,a,y)
+{
+    ISBN=isbn;
+    genre=g;
+    copies=c;
+}
+
+
+void checkout(){
+
+    if(copies>0)
+    {
+        copies--;
+        cout<<"Book issued\n";
+    }
+    else
+        cout<<"No copies available\n";
+}
+
+
+void display(){
+    cout<<"Book: ";
+    LibraryItem::display();
+}
+
+};
+
+
+class Journal : public LibraryItem {
+
+string ISSN;
+int volume;
+int issueNumber;
+
+public:
+
+Journal(int id,string t,string a,int y,string i,int v,int n)
+:LibraryItem(id,t,a,y)
+{
+    ISSN=i;
+    volume=v;
+    issueNumber=n;
+}
+
+
+void checkout(){
+    cout<<"Journal issued\n";
+}
+
+
+void display(){
+    cout<<"Journal: ";
+    LibraryItem::display();
+}
+
+};
+
+
+
+class Library {
+
+LibraryItem* items[10];
+int count;
+
+public:
+
+Library(){
+    count=0;
+}
+
+
+void addItem(LibraryItem* item){
+    items[count++]=item;
+}
+
+
+void searchByTitle(string name){
+
+for(int i=0;i<count;i++)
+{
+    if(items[i]->getTitle()==name)
+    {
+        cout<<"Found:\n";
+        items[i]->display();
+    }
+}
+
+}
+
+
+
+void saveFile(){
+
+ofstream file("library.txt");
+
+for(int i=0;i<count;i++)
+{
+    file<<items[i]->getID()<<" "
+        <<items[i]->getTitle()<<endl;
+}
+
+file.close();
+
+cout<<"Saved\n";
+}
+
+
+
+void loadFile(){
+
+ifstream file("library.txt");
+
+int id;
+string title;
+
+while(file>>id>>title)
+{
+    cout<<id<<" "<<title<<endl;
+}
+
+file.close();
+
+}
+
+
+};
+
+
+
+int main(){
+
+Library lib;
+
+
+lib.addItem(
+new Book(1,"C++","Ali",2024,"111","Programming",3)
+);
+
+
+lib.addItem(
+new Journal(2,"AI Journal","Sara",2025,"222",5,1)
+);
+
+
+
+lib.searchByTitle("C++");
+
+
+lib.saveFile();
+
+lib.loadFile();
+
+
+
+try{
+
+int daysLate=5;
+
+if(daysLate>0)
+throw OverdueException(500);
+
+}
+
+catch(OverdueException e){
+
+cout<<"Fine = "<<e.getFine();
+
+}
+
+
+return 0;
+}
