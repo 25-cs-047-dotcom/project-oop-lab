@@ -3,7 +3,7 @@
 using namespace std;
 
 
-// Abstract Base Class
+
 class Person
 {
 protected:
@@ -21,11 +21,11 @@ public:
         contact = con;
     }
 
-    virtual void displayInfo() = 0;   // Pure Virtual Function
+    virtual void displayInfo() = 0;  
 };
 
 
-// Student Class (Inheritance)
+
 class Student : public Person
 {
 private:
@@ -86,7 +86,7 @@ public:
 
 
 
-// Faculty Class
+
 class Faculty : public Person
 {
 private:
@@ -122,7 +122,7 @@ public:
 
 
 
-// Staff Class
+
 class Staff : public Person
 {
 private:
@@ -155,11 +155,11 @@ public:
 
 
 
-// Main Function
+
 int main()
 {
 
-    // Runtime Polymorphism
+   
     Person* p;
 
 
